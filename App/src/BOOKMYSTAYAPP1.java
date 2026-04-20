@@ -1,103 +1,76 @@
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- * Hotel Booking Management System - Use Case 2
- * Demonstrates abstraction, inheritance, and polymorphism
- * using different room types and static availability.
+ * Hotel Booking Management System - Use Case 3
+ * Demonstrates centralized inventory using HashMap.
  *
  * @author HIYA
- * @version 2.1
+ * @version 3.1
  */
 
-// Abstract class
-abstract class Room {
-    protected String roomType;
-    protected int beds;
-    protected double price;
+// Inventory class (Single Source of Truth)
+class RoomInventory {
 
-    // Constructor
-    public Room(String roomType, int beds, double price) {
-        this.roomType = roomType;
-        this.beds = beds;
-        this.price = price;
+    private HashMap<String, Integer> inventory;
+
+    // Constructor - initialize inventory
+    public RoomInventory() {
+        inventory = new HashMap<>();
+
+        inventory.put("Single Room", 5);
+        inventory.put("Double Room", 3);
+        inventory.put("Suite Room", 2);
     }
 
-    // Abstract method
-    public abstract void displayDetails();
-}
-
-// Single Room
-class SingleRoom extends Room {
-
-    public SingleRoom() {
-        super("Single Room", 1, 1000);
+    // Get availability of a specific room
+    public int getAvailability(String roomType) {
+        return inventory.getOrDefault(roomType, 0);
     }
 
-    @Override
-    public void displayDetails() {
-        System.out.println("Room Type: " + roomType);
-        System.out.println("Beds: " + beds);
-        System.out.println("Price: ₹" + price);
-    }
-}
-
-// Double Room
-class DoubleRoom extends Room {
-
-    public DoubleRoom() {
-        super("Double Room", 2, 2000);
+    // Update availability (add/remove rooms)
+    public void updateAvailability(String roomType, int count) {
+        if (inventory.containsKey(roomType)) {
+            inventory.put(roomType, inventory.get(roomType) + count);
+        } else {
+            System.out.println("Room type not found!");
+        }
     }
 
-    @Override
-    public void displayDetails() {
-        System.out.println("Room Type: " + roomType);
-        System.out.println("Beds: " + beds);
-        System.out.println("Price: ₹" + price);
-    }
-}
-
-// Suite Room
-class SuiteRoom extends Room {
-
-    public SuiteRoom() {
-        super("Suite Room", 3, 5000);
-    }
-
-    @Override
-    public void displayDetails() {
-        System.out.println("Room Type: " + roomType);
-        System.out.println("Beds: " + beds);
-        System.out.println("Price: ₹" + price);
+    // Display full inventory
+    public void displayInventory() {
+        System.out.println("\n--- Current Room Inventory ---");
+        for (Map.Entry<String, Integer> entry : inventory.entrySet()) {
+            System.out.println(entry.getKey() + " : " + entry.getValue());
+        }
     }
 }
 
 // Main class
-public class RoomInitialization {
+public class UseCase3InventorySetup {
 
     public static void main(String[] args) {
 
-        System.out.println("===== Book My Stay App v2.1 =====");
+        System.out.println("===== Book My Stay App v3.1 =====");
 
-        // Creating room objects (Polymorphism)
-        Room single = new SingleRoom();
-        Room doubleRoom = new DoubleRoom();
-        Room suite = new SuiteRoom();
+        // Initialize inventory
+        RoomInventory inventory = new RoomInventory();
 
-        // Static availability (simple variables)
-        int singleAvailable = 5;
-        int doubleAvailable = 3;
-        int suiteAvailable = 2;
+        // Display initial inventory
+        inventory.displayInventory();
 
-        // Display details
-        System.out.println("\n--- Room Details ---");
+        // Check availability
+        System.out.println("\nAvailable Single Rooms: " +
+                inventory.getAvailability("Single Room"));
 
-        single.displayDetails();
-        System.out.println("Available: " + singleAvailable + "\n");
+        // Update inventory (booking 1 single room)
+        inventory.updateAvailability("Single Room", -1);
 
-        doubleRoom.displayDetails();
-        System.out.println("Available: " + doubleAvailable + "\n");
+        System.out.println("\nAfter booking 1 Single Room:");
 
-        suite.displayDetails();
-        System.out.println("Available: " + suiteAvailable + "\n");
+        // Display updated inventory
+        inventory.displayInventory();
 
-        System.out.println("Application finished.");
+        System.out.println("\nApplication finished.");
     }
 }
